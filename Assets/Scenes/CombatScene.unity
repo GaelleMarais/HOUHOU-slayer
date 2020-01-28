@@ -232,6 +232,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Monstre
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 2571abe62752c964fa58b822184e1435,
+        type: 3}
+      propertyPath: m_TagString
+      value: enemy
+      objectReference: {fileID: 0}
     - target: {fileID: -6057140222963153312, guid: 2571abe62752c964fa58b822184e1435,
         type: 3}
       propertyPath: m_Controller
@@ -391,6 +396,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 19439a8d30adaeb41a8823782ebef4b2,
+        type: 3}
+      propertyPath: m_TagString
+      value: player
+      objectReference: {fileID: 0}
     - target: {fileID: -6057140222963153312, guid: 19439a8d30adaeb41a8823782ebef4b2,
         type: 3}
       propertyPath: m_Controller
@@ -483,32 +493,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 654460917}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79e3863d3a8c6641a418039375a0114, type: 3}
+  m_Script: {fileID: 11500000, guid: d5da135b224fdc340a6602f5711c5333, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 669458202}
   healthBarImage: {fileID: 1708426051}
-  target: {fileID: 669458202}
-  health: 13.3
---- !u!114 &654460920
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 654460917}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e807f056e57d4ca44940d552edb590d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 669458202}
+  attackFrequence: 7
 --- !u!1 &669458202 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 2571abe62752c964fa58b822184e1435,
     type: 3}
   m_PrefabInstance: {fileID: 317278729}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &669458205
+--- !u!114 &669458203
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -517,27 +514,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 669458202}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d61070c6550259458202034b4e6cab0, type: 3}
+  m_Script: {fileID: 11500000, guid: d5da135b224fdc340a6602f5711c5333, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 654460917}
   healthBarImage: {fileID: 331859114}
-  attackFrequence: 1
---- !u!114 &669458206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 669458202}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79e3863d3a8c6641a418039375a0114, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthBarImage: {fileID: 331859114}
-  target: {fileID: 654460917}
-  health: 13.3
+  attackFrequence: 7
 --- !u!1 &684527158
 GameObject:
   m_ObjectHideFlags: 0
