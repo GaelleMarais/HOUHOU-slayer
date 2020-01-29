@@ -126,16 +126,13 @@ public class CharacterController : MonoBehaviour
         {
             bleeding += 0.05f;
             screen.color = new Color(1, 0, 0, bleeding);
-            Debug.Log(bleeding);
             yield return new WaitForSeconds(0.01f);
         }
         while (bleeding > 0.05f)
         {
             bleeding -= 0.05f;
             screen.color = new Color(1, 0, 0, bleeding);
-            Debug.Log(bleeding);
             yield return new WaitForSeconds(0.01f);
         }
-
     }
 }
