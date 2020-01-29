@@ -11,16 +11,23 @@ public class CharacterController : MonoBehaviour
     public float attackFrequence = 7;
     public RawImage screen;
 
+    private SoundPlayer soundPlayer;
     private CharacterController targetController;
-    private bool canAttack = true;
-    private bool canBlock = true;
-    private float health = 13.3f;
-    private float healthBar = 13.3f;
+    public bool canAttack = true;
+    public bool canBlock = true;
+    private float health = 10f;
+    private float healthBar = 10f;
+
+    public AudioClip hitSound;
+    public AudioClip attackSound;
+    public AudioClip blockSound;
+    public AudioClip deathSound;
 
     void Start()
     {
         animator = gameObject.GetComponent<Animator>();
         targetController = target.GetComponent<CharacterController>();
+        soundPlayer = GetComponent<SoundPlayer>();
 
         if (gameObject.tag == "enemy")
         {
@@ -31,7 +38,7 @@ public class CharacterController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         if (targetController.canAttack)
         {
@@ -50,10 +57,12 @@ public class CharacterController : MonoBehaviour
             {
                 gameObject.GetComponent<Animator>().SetBool("dead", true);
                 target.GetComponent<Animator>().SetBool("victory", true);
+                StartCoroutine(soundPlayer.TriggerSound(deathSound, 0.1f));
             }
             else
             {
                 gameObject.GetComponent<Animator>().SetTrigger("hit");
+                StartCoroutine(soundPlayer.TriggerSound(hitSound, 0.1f));
             }
         }       
     }
@@ -66,8 +75,12 @@ public class CharacterController : MonoBehaviour
             {
                 targetController.canAttack = false;
                 animator.SetTrigger("attacking");
+                StartCoroutine(soundPlayer.TriggerSound(attackSound, 0.1f));
                 yield return new WaitForSeconds(0.6f);
                 targetController.TakeDamage(2);
+                yield return new WaitForSeconds(1);
+                canAttack = true;
+                targetController.canAttack = true;
             }
             else if (Input.GetAxis("Fire1") == 1 && canBlock)
             {
@@ -92,10 +105,14 @@ public class CharacterController : MonoBehaviour
             if (canAttack)
             {
                 animator.SetTrigger("attacking");
+                StartCoroutine(soundPlayer.TriggerSound(attackSound, 0.1f));
                 targetController.canAttack = false;
                 yield return new WaitForSeconds(1.2f);
-                targetController.TakeDamage(6);
-                
+                targetController.TakeDamage(4.5f);
+                yield return new WaitForSeconds(1);
+                canAttack = true;
+                targetController.canAttack = true;
+                targetController.canBlock = true;
             }
             yield return new WaitForSeconds(attackFrequence);
         }
@@ -112,10 +129,6 @@ public class CharacterController : MonoBehaviour
             }
             yield return new WaitForSeconds(0.01f);
         }
-        yield return new WaitForSeconds(1);
-        canAttack = true;
-        targetController.canAttack = true;
-        canBlock = true;
     }
 
     public IEnumerator BleedEffect()
