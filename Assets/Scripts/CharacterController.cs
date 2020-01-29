@@ -10,11 +10,10 @@ public class CharacterController : MonoBehaviour
     public float attackFrequence = 7;
 
     private CharacterController targetController;
-    private bool canAttack = true;
+    public bool canAttack = true; //TODO private
     private float health = 13.3f;
     private float healthBar = 13.3f;
 
-    // Start is called before the first frame update
     void Start()
     {
         animator = gameObject.GetComponent<Animator>();
@@ -36,7 +35,7 @@ public class CharacterController : MonoBehaviour
             canAttack = false;
             targetController.canAttack = false;
             health -= damage;
-            gameObject.GetComponent<Animator>().SetTrigger("hit");
+
             StartCoroutine(UpdateBar());
 
             if (health <= 0)
@@ -44,12 +43,16 @@ public class CharacterController : MonoBehaviour
                 gameObject.GetComponent<Animator>().SetBool("dead", true);
                 target.GetComponent<Animator>().SetBool("victory", true);
             }
+            else
+            {
+                gameObject.GetComponent<Animator>().SetTrigger("hit");
+            }
         }       
     }
 
     IEnumerator PlayerAttack()
     {
-        while (true)
+        while (!animator.GetBool("dead"))
         {
             if (Input.GetAxis("Fire2") == 1 && canAttack)
             {
@@ -81,8 +84,9 @@ public class CharacterController : MonoBehaviour
             if (canAttack)
             {
                 animator.SetTrigger("attacking");
+                targetController.canAttack = false;
                 yield return new WaitForSeconds(1.2f);
-                targetController.TakeDamage(5);
+                targetController.TakeDamage(6);
                 
             }
             yield return new WaitForSeconds(attackFrequence);
@@ -100,12 +104,8 @@ public class CharacterController : MonoBehaviour
             }
             yield return new WaitForSeconds(0.01f);
         }
-        yield return null;
+        yield return new WaitForSeconds(1);
+        canAttack = true;
+        targetController.canAttack = true;
     }
-
-    public void CanAttack(bool b)
-    {
-        canAttack = b;
-    }
-
 }

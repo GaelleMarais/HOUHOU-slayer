@@ -499,6 +499,7 @@ MonoBehaviour:
   target: {fileID: 669458202}
   healthBarImage: {fileID: 1708426051}
   attackFrequence: 7
+  canAttack: 1
 --- !u!1 &669458202 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 2571abe62752c964fa58b822184e1435,
@@ -520,6 +521,7 @@ MonoBehaviour:
   target: {fileID: 654460917}
   healthBarImage: {fileID: 331859114}
   attackFrequence: 7
+  canAttack: 1
 --- !u!1 &684527158
 GameObject:
   m_ObjectHideFlags: 0
