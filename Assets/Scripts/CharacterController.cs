@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterController : MonoBehaviour
 {
@@ -8,9 +9,11 @@ public class CharacterController : MonoBehaviour
     public GameObject target;
     public Transform healthBarImage;
     public float attackFrequence = 7;
+    public RawImage screen;
 
     private CharacterController targetController;
-    public bool canAttack = true; //TODO private
+    private bool canAttack = true;
+    private bool canBlock = true;
     private float health = 13.3f;
     private float healthBar = 13.3f;
 
@@ -34,7 +37,12 @@ public class CharacterController : MonoBehaviour
         {
             canAttack = false;
             targetController.canAttack = false;
+            canBlock = false;
             health -= damage;
+            if(gameObject.tag == "player")
+            {
+                StartCoroutine(BleedEffect());
+            }
 
             StartCoroutine(UpdateBar());
 
@@ -61,7 +69,7 @@ public class CharacterController : MonoBehaviour
                 yield return new WaitForSeconds(0.6f);
                 targetController.TakeDamage(2);
             }
-            else if (Input.GetAxis("Fire1") == 1)
+            else if (Input.GetAxis("Fire1") == 1 && canBlock)
             {
                 canAttack = false;
                 targetController.canAttack = false;
@@ -107,5 +115,27 @@ public class CharacterController : MonoBehaviour
         yield return new WaitForSeconds(1);
         canAttack = true;
         targetController.canAttack = true;
+        canBlock = true;
+    }
+
+    public IEnumerator BleedEffect()
+    {
+        float bleeding = 0;
+        yield return new WaitForSeconds(0.15f);
+        while (bleeding < 0.3f)
+        {
+            bleeding += 0.05f;
+            screen.color = new Color(1, 0, 0, bleeding);
+            Debug.Log(bleeding);
+            yield return new WaitForSeconds(0.01f);
+        }
+        while (bleeding > 0.05f)
+        {
+            bleeding -= 0.05f;
+            screen.color = new Color(1, 0, 0, bleeding);
+            Debug.Log(bleeding);
+            yield return new WaitForSeconds(0.01f);
+        }
+
     }
 }
