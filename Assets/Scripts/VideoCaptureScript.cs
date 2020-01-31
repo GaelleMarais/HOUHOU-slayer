@@ -19,6 +19,7 @@ public class VideoCaptureScript : MonoBehaviour
     VideoCapture video;
     public RawImage display;
     public Texture2D texture;
+
     [Range(0, 255)]
     public double hmin;
     [Range(0, 255)]
