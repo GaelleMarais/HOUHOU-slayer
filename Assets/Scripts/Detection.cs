@@ -41,11 +41,41 @@ public class Detection : MonoBehaviour
     public int operationSize = 1;
     public int nbrIteration = 2;
 
-    private VectorOfPoint shieldContour;
+    public VectorOfPoint shieldContour = new VectorOfPoint();
 
-    private VectorOfPoint swordContour;
+    public VectorOfPoint swordContour = new VectorOfPoint();
 
     private Mat image;
+
+    public int biggestContourIndex = -1;
+
+    public bool Block()
+    {
+        if (biggestContourIndex == -1)
+            return false;
+        
+        try
+        {
+            if (CvInvoke.ContourArea(shieldContour) > 20000)
+            {
+                Debug.Log(CvInvoke.ContourArea(shieldContour));
+                return true;
+            }
+            else
+            {
+                Debug.Log(CvInvoke.ContourArea(shieldContour));
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+       
+
+        return true;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -118,7 +148,7 @@ public class Detection : MonoBehaviour
     {
         VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
         VectorOfPoint biggestContour = new VectorOfPoint();
-        int biggestContourIndex = -1;
+        biggestContourIndex = -1;
         double biggestContourArea;
 
         Mat hierarchy = new Mat();
@@ -134,11 +164,21 @@ public class Detection : MonoBehaviour
 
         if (biggestContourIndex > -1)
         {
-            if (nameObj == "Shield" )
-                shieldContour = biggestContour;
-            else if (nameObj == "Sword")
-                swordContour = biggestContour;
+            if (nameObj == "Shield")
+            {
 
+                Debug.Log("bg "+CvInvoke.ContourArea(biggestContour));
+                shieldContour = biggestContour;
+
+                if(CvInvoke.ContourArea(shieldContour) > 10000)
+                Debug.Log("sc "+CvInvoke.ContourArea(shieldContour));
+            }
+            else if (nameObj == "Sword")
+            {
+                swordContour = biggestContour;
+            }
+
+            
             CvInvoke.DrawContours(image,contours,biggestContourIndex,new MCvScalar(0,0,255));
         }
     }

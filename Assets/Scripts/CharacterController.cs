@@ -23,6 +23,8 @@ public class CharacterController : MonoBehaviour
     public AudioClip blockSound;
     public AudioClip deathSound;
 
+    public GameObject detection;
+
     void Start()
     {
         animator = gameObject.GetComponent<Animator>();
@@ -82,7 +84,7 @@ public class CharacterController : MonoBehaviour
                 canAttack = true;
                 targetController.canAttack = true;
             }
-            else if (Input.GetAxis("Fire1") == 1 && canBlock)
+            else if ( (Input.GetAxis("Fire1") == 1 || detection.GetComponent<Detection>().Block() ) && canBlock )
             {
                 canAttack = false;
                 targetController.canAttack = false;
