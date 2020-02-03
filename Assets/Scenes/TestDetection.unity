@@ -151,20 +151,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   display: {fileID: 247293652}
   texture: {fileID: 0}
-  hShieldMin: 0
-  sShieldMin: 0
+  hShieldMin: 90
+  sShieldMin: 50
   vShieldMin: 0
-  hShieldMax: 45
+  hShieldMax: 150
   sShieldMax: 255
   vShieldMax: 255
-  hSwordMin: 30
+  hSwordMin: 20
   sSwordMin: 20
   vSwordMin: 0
-  hSwordMax: 90
+  hSwordMax: 30
   sSwordMax: 255
   vSwordMax: 255
   operationSize: 1
   nbrIteration: 2
+  biggestContourIndex: -1
+  boolAttack: 0
 --- !u!4 &211798633
 Transform:
   m_ObjectHideFlags: 0

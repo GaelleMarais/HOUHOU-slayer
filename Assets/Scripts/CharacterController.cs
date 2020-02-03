@@ -73,7 +73,7 @@ public class CharacterController : MonoBehaviour
     {
         while (!animator.GetBool("dead"))
         {
-            if (Input.GetAxis("Fire2") == 1 && canAttack)
+            if ( (Input.GetAxis("Fire2") == 1 || detection.GetComponent<Detection>().Attack()) && canAttack)
             {
                 targetController.canAttack = false;
                 animator.SetTrigger("attacking");

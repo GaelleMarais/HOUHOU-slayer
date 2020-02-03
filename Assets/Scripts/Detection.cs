@@ -12,6 +12,7 @@ using System.Drawing;
 using System.IO;
 using System.Numerics;
 using UnityEngine.UI;
+using ZedGraph;
 
 
 public class Detection : MonoBehaviour
@@ -49,6 +50,9 @@ public class Detection : MonoBehaviour
 
     public int biggestContourIndex = -1;
 
+    public bool boolAttack = false;
+    public Point lastCenter;
+
     public bool Block()
     {
         if (biggestContourIndex == -1)
@@ -56,7 +60,7 @@ public class Detection : MonoBehaviour
         
         try
         {
-            if (CvInvoke.ContourArea(shieldContour) > 20000)
+            if (CvInvoke.ContourArea(shieldContour) > 15000)
             {
                 Debug.Log(CvInvoke.ContourArea(shieldContour));
                 return true;
@@ -77,10 +81,54 @@ public class Detection : MonoBehaviour
         return true;
     }
 
+    public bool Attack()
+    {
+        //return false;
+        Debug.Log(boolAttack);
+        return boolAttack;
+    }
+
+    public IEnumerator CheckAttack()
+    {
+        Point newCenter;
+        float x = 0;
+        float y = 0;
+
+        for(int i = 0; i < swordContour.Size ; i++)
+        {
+            x += swordContour[i].X;
+            y += swordContour[i].Y;
+        }
+
+        x /= swordContour.Size;
+        y /= swordContour.Size;
+
+        newCenter = new Point((int)x,(int)y);
+
+        float distance = Mathf.Sqrt( (lastCenter.X - newCenter.X)*(lastCenter.X - newCenter.X) + (lastCenter.Y  - newCenter.Y )*(lastCenter.Y - newCenter.Y)) ; 
+
+        //Debug.Log("dist =" + distance + "  v= "+ boolAttack);
+
+        if (distance > 100)
+        {
+            boolAttack = true;
+        }
+        else
+        {
+            boolAttack = false;
+        }
+
+        lastCenter = newCenter;
+
+        yield return new WaitForSeconds(1f);
+        StartCoroutine("CheckAttack");
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         _webcam = new VideoCapture(0);
+        StartCoroutine("CheckAttack");
 
     }
 
@@ -167,19 +215,19 @@ public class Detection : MonoBehaviour
             if (nameObj == "Shield")
             {
 
-                Debug.Log("bg "+CvInvoke.ContourArea(biggestContour));
+                //Debug.Log("bg "+ CvInvoke.ContourArea(biggestContour));
                 shieldContour = biggestContour;
 
-                if(CvInvoke.ContourArea(shieldContour) > 10000)
-                Debug.Log("sc "+CvInvoke.ContourArea(shieldContour));
+                //Debug.Log("sc "+ CvInvoke.ContourArea(shieldContour));
             }
             else if (nameObj == "Sword")
             {
                 swordContour = biggestContour;
             }
 
+
             
-            CvInvoke.DrawContours(image,contours,biggestContourIndex,new MCvScalar(0,0,255));
+            CvInvoke.DrawContours(image, contours, biggestContourIndex, new MCvScalar(0, 0, 255),10);
         }
     }
     private void DisplayFrame(Mat frame)
