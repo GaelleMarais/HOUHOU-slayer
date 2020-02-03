@@ -43,12 +43,15 @@ public class Detection : MonoBehaviour
     public int nbrIteration = 2;
 
     public VectorOfPoint shieldContour = new VectorOfPoint();
+    public double shieldContourArea = 0;
 
     public VectorOfPoint swordContour = new VectorOfPoint();
+    public double swordContourArea = 0;
 
     private Mat image;
 
     public int biggestContourIndexShield = -1;
+    public int biggestContourIndexSword = -1;
 
     public bool boolAttack = false;
     public Point lastCenter;
@@ -58,7 +61,7 @@ public class Detection : MonoBehaviour
         if (biggestContourIndexShield == -1)
             return false;
         
-        if (CvInvoke.ContourArea(shieldContour) > 15000)
+        if (shieldContourArea > 15000)
         { 
             //Debug.Log(CvInvoke.ContourArea(shieldContour));
             return true;
@@ -97,18 +100,22 @@ public class Detection : MonoBehaviour
         float distance = Mathf.Sqrt( (lastCenter.X - newCenter.X)*(lastCenter.X - newCenter.X) + (lastCenter.Y  - newCenter.Y )*(lastCenter.Y - newCenter.Y)) ;
 
 
-        if (CvInvoke.ContourArea(swordContour) < 1000)
+        if (swordContourArea < 1000)
         {
             boolAttack = false;
         }
-        else if (distance > 250)
+        else 
         {
-            boolAttack = true;
+            if (distance > 150)
+            {
+                boolAttack = true;
+            }
+            else
+            {
+                boolAttack = false;
+            }
         }
-        else
-        {
-            boolAttack = false;
-        }
+        
 
         Debug.Log("dist =" + distance + "  v= " + boolAttack);
 
@@ -179,7 +186,7 @@ public class Detection : MonoBehaviour
 
         Mat frameSword = frameHSV.InRange(lowerSword, upperSword).Mat;
 
-        CvInvoke.Erode(frameSword, frameSword, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
+        CvInvoke.Dilate(frameSword, frameSword, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
         CvInvoke.Erode(frameSword, frameSword, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
 
         FindContour(frameSword,"Sword");
@@ -197,6 +204,9 @@ public class Detection : MonoBehaviour
         if (nameObj == "Shield")
             biggestContourIndexShield = -1;
 
+        if (nameObj == "Sword")
+            biggestContourIndexSword = -1;
+
         double biggestContourArea;
 
         Mat hierarchy = new Mat();
@@ -209,7 +219,17 @@ public class Detection : MonoBehaviour
             biggestContourIndex = i;
 
             if (nameObj == "Shield")
+            {
                 biggestContourIndexShield = i;
+                shieldContourArea = CvInvoke.ContourArea(contours[i]);
+            }
+
+
+            if (nameObj == "Sword")
+            {
+                biggestContourIndexSword = i;
+                swordContourArea = CvInvoke.ContourArea(contours[i]);
+            }
 
             biggestContourArea = CvInvoke.ContourArea(contours[i]);
         }
