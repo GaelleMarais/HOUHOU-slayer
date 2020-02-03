@@ -94,11 +94,14 @@ public class Detection : MonoBehaviour
 
         newCenter = new Point((int)x,(int)y);
 
-        float distance = Mathf.Sqrt( (lastCenter.X - newCenter.X)*(lastCenter.X - newCenter.X) + (lastCenter.Y  - newCenter.Y )*(lastCenter.Y - newCenter.Y)) ; 
+        float distance = Mathf.Sqrt( (lastCenter.X - newCenter.X)*(lastCenter.X - newCenter.X) + (lastCenter.Y  - newCenter.Y )*(lastCenter.Y - newCenter.Y)) ;
 
-       
 
-        if (distance > 250)
+        if (CvInvoke.ContourArea(swordContour) < 1000)
+        {
+            boolAttack = false;
+        }
+        else if (distance > 250)
         {
             boolAttack = true;
         }

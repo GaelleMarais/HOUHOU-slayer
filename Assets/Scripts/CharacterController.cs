@@ -48,10 +48,10 @@ public class CharacterController : MonoBehaviour
             targetController.canAttack = false;
             canBlock = false;
             health -= damage;
-            if(gameObject.tag == "player")
+            /* if(gameObject.tag == "player")
             {
                 StartCoroutine(BleedEffect());
-            }
+            } */
 
             StartCoroutine(UpdateBar());
 
@@ -133,6 +133,7 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    /*
     public IEnumerator BleedEffect()
     {
         float bleeding = 0;
@@ -150,4 +151,5 @@ public class CharacterController : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
         }
     }
+    */
 }
