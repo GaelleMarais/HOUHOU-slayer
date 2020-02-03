@@ -157,15 +157,15 @@ MonoBehaviour:
   hShieldMax: 150
   sShieldMax: 255
   vShieldMax: 255
-  hSwordMin: 20
+  hSwordMin: 30
   sSwordMin: 20
-  vSwordMin: 0
-  hSwordMax: 30
+  vSwordMin: 100
+  hSwordMax: 90
   sSwordMax: 255
   vSwordMax: 255
   operationSize: 1
   nbrIteration: 2
-  biggestContourIndex: -1
+  biggestContourIndexShield: -1
   boolAttack: 0
 --- !u!4 &211798633
 Transform:

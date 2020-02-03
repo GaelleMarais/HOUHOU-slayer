@@ -48,37 +48,26 @@ public class Detection : MonoBehaviour
 
     private Mat image;
 
-    public int biggestContourIndex = -1;
+    public int biggestContourIndexShield = -1;
 
     public bool boolAttack = false;
     public Point lastCenter;
 
     public bool Block()
     {
-        if (biggestContourIndex == -1)
+        if (biggestContourIndexShield == -1)
             return false;
         
-        try
-        {
-            if (CvInvoke.ContourArea(shieldContour) > 15000)
-            {
-                Debug.Log(CvInvoke.ContourArea(shieldContour));
-                return true;
-            }
-            else
-            {
-                Debug.Log(CvInvoke.ContourArea(shieldContour));
-                return false;
-            }
+        if (CvInvoke.ContourArea(shieldContour) > 15000)
+        { 
+            //Debug.Log(CvInvoke.ContourArea(shieldContour));
+            return true;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e);
-            throw;
+            //Debug.Log(CvInvoke.ContourArea(shieldContour));
+            return false;
         }
-       
-
-        return true;
     }
 
     public bool Attack()
@@ -88,7 +77,7 @@ public class Detection : MonoBehaviour
         return boolAttack;
     }
 
-    public IEnumerator CheckAttack()
+    public void CheckAttack()
     {
         Point newCenter;
         float x = 0;
@@ -107,9 +96,9 @@ public class Detection : MonoBehaviour
 
         float distance = Mathf.Sqrt( (lastCenter.X - newCenter.X)*(lastCenter.X - newCenter.X) + (lastCenter.Y  - newCenter.Y )*(lastCenter.Y - newCenter.Y)) ; 
 
-        //Debug.Log("dist =" + distance + "  v= "+ boolAttack);
+       
 
-        if (distance > 100)
+        if (distance > 250)
         {
             boolAttack = true;
         }
@@ -118,17 +107,19 @@ public class Detection : MonoBehaviour
             boolAttack = false;
         }
 
+        Debug.Log("dist =" + distance + "  v= " + boolAttack);
+
         lastCenter = newCenter;
 
-        yield return new WaitForSeconds(1f);
-        StartCoroutine("CheckAttack");
+        Invoke("CheckAttack",0.5f);
     }
 
     // Start is called before the first frame update
     void Start()
     {
         _webcam = new VideoCapture(0);
-        StartCoroutine("CheckAttack");
+
+       CheckAttack();
 
     }
 
@@ -144,6 +135,8 @@ public class Detection : MonoBehaviour
         ProcessImage(image);
 
         DisplayFrame(image);
+
+
 
 
     }
@@ -196,7 +189,11 @@ public class Detection : MonoBehaviour
     {
         VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
         VectorOfPoint biggestContour = new VectorOfPoint();
-        biggestContourIndex = -1;
+        int biggestContourIndex = -1;
+
+        if (nameObj == "Shield")
+            biggestContourIndexShield = -1;
+
         double biggestContourArea;
 
         Mat hierarchy = new Mat();
@@ -207,6 +204,10 @@ public class Detection : MonoBehaviour
         {
             biggestContour = contours[i];
             biggestContourIndex = i;
+
+            if (nameObj == "Shield")
+                biggestContourIndexShield = i;
+
             biggestContourArea = CvInvoke.ContourArea(contours[i]);
         }
 
