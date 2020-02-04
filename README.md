@@ -11,14 +11,14 @@ Pour cela, il dispose de 2 actions :
 
 Il faut donc détecter les contours de 2 objets qui serviront de marqueurs pour le bouclier et l'épée du joueur.
 
-Bloquer :
+### Bloquer :
 
 La co-routine qui détecte les inputs appelle une fonction qui détecte la zone du bouclier. Cette fonction détecte les plus grands contours de la couleur définie par les paramètres du bouclier. Ensuite la fonction calcule l'aire du plus grand contour (si il existe). Si cette aire dépasse une valeur seuille alors la fonction renvoie true, ce qui déclenche l'action de bloquer. L'action de bloquer a la priorité sur l'action de frapper.
 
-Frapper :
+### Frapper :
 
 La co-routine qui détecte les inputs appelle une fonction qui renvoie si le personnage attaque ou non. Dans l'objet qui détecte l'épée il y a une fonction qui met à jour ce booléen d'attaque. Cette fonction est appellée toutes les 0.5 secondes. Elle détecte le contour le plus grand de la couleur définit par les paramètres de l'épée. Ensuite la fonction calcule le centroïde du contour, puis elle calcul la distance entre ce nouveau centroïde et le précédent. Si la distance est suffisemment grande alors elle set le booléen à true sinon à false.
 
-Piste d'amélioration :
+### Piste d'amélioration :
 
 Rendre possible la modification des paramètres de couleur de l'épée et du bouclier directement dans le jeu. Se baser plutot sur le mouvement de l'épée plutôt que sur le déplacement de son centroid.
