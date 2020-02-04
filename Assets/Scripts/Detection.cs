@@ -17,11 +17,13 @@ using ZedGraph;
 
 public class Detection : MonoBehaviour
 {
-    private VideoCapture _webcam;
-    
+    private VideoCapture webcam;
+
+    public Image img;
     public RawImage display;
     public Texture2D texture;
-
+    private float width;
+    private float height;
 
     public double hShieldMin;
     public double sShieldMin;
@@ -48,7 +50,7 @@ public class Detection : MonoBehaviour
     public VectorOfPoint swordContour = new VectorOfPoint();
     public double swordContourArea = 0;
 
-    private Mat image;
+    private Mat frame;
 
     public int biggestContourIndexShield = -1;
     public int biggestContourIndexSword = -1;
@@ -76,7 +78,7 @@ public class Detection : MonoBehaviour
     public bool Attack()
     {
         //return false;
-        Debug.Log(boolAttack);
+        //Debug.Log(boolAttack);
         return boolAttack;
     }
 
@@ -114,54 +116,44 @@ public class Detection : MonoBehaviour
             {
                 boolAttack = false;
             }
-        }
-        
+        }       
 
-        Debug.Log("dist =" + distance + "  v= " + boolAttack);
+        // Debug.Log("dist =" + distance + "  v= " + boolAttack);
 
         lastCenter = newCenter;
-
         Invoke("CheckAttack",0.5f);
     }
 
     // Start is called before the first frame update
     void Start()
-    {
-        _webcam = new VideoCapture(0);
-
-       CheckAttack();
-
+    {        
+        DisplayCamera();
+        CheckAttack();
     }
 
     // Update is called once per frame
     void Update()
     {
+        ProcessImage();
+        UpdateTexture();
         
+    }
 
-        //Query the frame from the webcam
-        image = _webcam.QueryFrame();
-        CvInvoke.Flip(image, image, Emgu.CV.CvEnum.FlipType.Vertical);
-
-        ProcessImage(image);
-
-        DisplayFrame(image);
-
-
-
-
+    private void UpdateTexture()
+    {
+        frame = webcam.QueryFrame();
+        texture.LoadRawTextureData(frame.ToImage<Bgra, Byte>().Bytes);
+        texture.Apply();
     }
 
     
-    private Mat ProcessImage(Mat frame)
+    private Mat ProcessImage()
     {
-        Mat flippedImage = frame.Clone();
-
-      
-
+        frame = webcam.QueryFrame();    
 
         //Focus on the shield
         Mat frameHsvMat = new Mat();
-        CvInvoke.CvtColor(flippedImage,frameHsvMat,ColorConversion.Bgr2Hsv);
+        CvInvoke.CvtColor(frame,frameHsvMat,ColorConversion.Bgr2Hsv);
 
         Image<Hsv, byte> frameHSV = frameHsvMat.ToImage<Hsv, byte>();
 
@@ -248,35 +240,30 @@ public class Detection : MonoBehaviour
             {
                 swordContour = biggestContour;
             }
-
-
             
-            CvInvoke.DrawContours(image, contours, biggestContourIndex, new MCvScalar(0, 0, 255),10);
+            CvInvoke.DrawContours(frame, contours, biggestContourIndex, new MCvScalar(0, 0, 255),10);
         }
     }
-    private void DisplayFrame(Mat frame)
+
+    private void DisplayCamera()
     {
+        webcam = new VideoCapture(0);
+        frame = webcam.QueryFrame();
+
         if (!frame.IsEmpty)
         {
             if (frame.IsContinuous)
             {
-                int width = (int)display.rectTransform.rect.width;
-                int height = (int)display.rectTransform.rect.height;
+                width = display.rectTransform.rect.width;
+                height = display.rectTransform.rect.height;
 
-                if (texture != null)
-                {
-                    Destroy(texture);
-                    texture = null;
-                }
+                texture = new Texture2D(webcam.Width, webcam.Height, TextureFormat.BGRA32, false);
 
-                texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
-                CvInvoke.Resize(frame, frame, new Size(width, height));
-                CvInvoke.CvtColor(frame, frame, ColorConversion.Bgr2Rgba);
-
-                texture.LoadRawTextureData(frame.ToImage<Rgba, Byte>().Bytes);
+                texture.LoadRawTextureData(frame.ToImage<Bgra, Byte>().Bytes);
                 texture.Apply();
 
                 display.texture = texture;
+                Debug.Log("Start camera OK");
             }
         }
     }
