@@ -5,6 +5,7 @@
 
 Demo: https://www.youtube.com/watch?v=DJHf39oWrvk&feature=youtu.be
 
+
 Le but du jeu est de simuler un duel en utilisant la vision par ordinateur. Le joueur doit vaincre son adversaire tout en bloquant ses assauts.
 
 Pour cela, il dispose de 2 actions :
@@ -25,3 +26,6 @@ La co-routine qui détecte les inputs appelle une fonction qui renvoie si le per
 
 Rendre possible la modification des paramètres de couleur de l'épée et du bouclier directement dans le jeu. 
 Se baser plutot sur le mouvement de l'épée plutôt que sur le déplacement de son centroid. Car si le mouvement est trop rapide ou le déplacement un peu faible le jeu ne détecte pas le coup.
+
+
+Ceci est un jeu réaliser dans le cadre d'un projet universitaire à Gamagora. Il a été réalisé par Vincent Givaudan, Gaëlle Marais et Thomas Duvignau.
