@@ -88,14 +88,21 @@ public class Detection : MonoBehaviour
         float x = 0;
         float y = 0;
 
-        for(int i = 0; i < swordContour.Size ; i++)
+        if(swordContour != null)
         {
-            x += swordContour[i].X;
-            y += swordContour[i].Y;
-        }
+            for (int i = 0; i < swordContour.Size; i++)
+            {
+                if(swordContour[i] != null)
+                {
+                    x += swordContour[i].X;
+                    y += swordContour[i].Y;
+                }
+            }
 
-        x /= swordContour.Size;
-        y /= swordContour.Size;
+            x /= swordContour.Size;
+            y /= swordContour.Size;
+        }
+        
 
         newCenter = new Point((int)x,(int)y);
 
