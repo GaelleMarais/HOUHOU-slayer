@@ -147,9 +147,10 @@ public class Detection : MonoBehaviour
 
     private void UpdateTexture()
     {
-        frame = webcam.QueryFrame();
-        texture.LoadRawTextureData(frame.ToImage<Bgra, Byte>().Bytes);
-        texture.Apply();
+        // frame = webcam.QueryFrame();
+        // texture.LoadRawTextureData(frame.ToImage<Bgra, Byte>().Bytes);
+        // texture.Apply();
+        CvInvoke.Imshow("camera", frame);
     }
 
     void OnDestroy()
@@ -260,8 +261,9 @@ public class Detection : MonoBehaviour
     {
         webcam = new VideoCapture(0);
         frame = webcam.QueryFrame();
+        CvInvoke.Imshow("camera", frame);
 
-        if (!frame.IsEmpty)
+        /* if (!frame.IsEmpty)
         {
             if (frame.IsContinuous)
             {
@@ -277,5 +279,6 @@ public class Detection : MonoBehaviour
                 Debug.Log("Start camera OK");
             }
         }
+        */
     }
 }
