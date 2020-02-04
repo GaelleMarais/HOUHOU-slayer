@@ -135,8 +135,7 @@ public class Detection : MonoBehaviour
     void Update()
     {
         ProcessImage();
-        UpdateTexture();
-        
+        UpdateTexture();        
     }
 
     private void UpdateTexture()
@@ -146,7 +145,12 @@ public class Detection : MonoBehaviour
         texture.Apply();
     }
 
-    
+    void OnDestroy()
+    {
+        webcam.Stop();
+    }
+
+
     private Mat ProcessImage()
     {
         frame = webcam.QueryFrame();    
