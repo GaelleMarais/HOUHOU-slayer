@@ -21,4 +21,5 @@ La co-routine qui détecte les inputs appelle une fonction qui renvoie si le per
 
 ### Piste d'amélioration :
 
-Rendre possible la modification des paramètres de couleur de l'épée et du bouclier directement dans le jeu. Se baser plutot sur le mouvement de l'épée plutôt que sur le déplacement de son centroid.
+Rendre possible la modification des paramètres de couleur de l'épée et du bouclier directement dans le jeu. 
+Se baser plutot sur le mouvement de l'épée plutôt que sur le déplacement de son centroid. Car si le mouvement est trop rapide ou le déplacement un peu faible le jeu ne détecte pas le coup.
