@@ -28,4 +28,4 @@ Rendre possible la modification des paramètres de couleur de l'épée et du bou
 Se baser plutot sur le mouvement de l'épée plutôt que sur le déplacement de son centroid. Car si le mouvement est trop rapide ou le déplacement un peu faible le jeu ne détecte pas le coup.
 
 
-Ceci est un jeu réaliser dans le cadre d'un projet universitaire à Gamagora. Il a été réalisé par Vincent Givaudan, Gaëlle Marais et Thomas Duvignau.
+*Ceci est un jeu réaliser dans le cadre d'un projet universitaire à Gamagora. Il a été réalisé par Vincent Givaudan, Gaëlle Marais et Thomas Duvignau.*
