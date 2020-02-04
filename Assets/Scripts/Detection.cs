@@ -51,6 +51,8 @@ public class Detection : MonoBehaviour
     public double swordContourArea = 0;
 
     private Mat frame;
+    private Mat binaryShield;
+    private Mat binarySword;
 
     public int biggestContourIndexShield = -1;
     public int biggestContourIndexSword = -1;
@@ -60,9 +62,6 @@ public class Detection : MonoBehaviour
 
     public bool Block()
     {
-        if (biggestContourIndexShield == -1)
-            return false;
-        
         if (shieldContourArea > 15000)
         { 
             //Debug.Log(CvInvoke.ContourArea(shieldContour));
@@ -103,13 +102,13 @@ public class Detection : MonoBehaviour
             y /= swordContour.Size;
         }
         
-
+          
         newCenter = new Point((int)x,(int)y);
 
         float distance = Mathf.Sqrt( (lastCenter.X - newCenter.X)*(lastCenter.X - newCenter.X) + (lastCenter.Y  - newCenter.Y )*(lastCenter.Y - newCenter.Y)) ;
 
 
-        if (swordContourArea < 1000)
+        if (swordContourArea < 500)
         {
             boolAttack = false;
         }
@@ -142,16 +141,10 @@ public class Detection : MonoBehaviour
     void Update()
     {
         ProcessImage();
-        UpdateTexture();        
+        CvInvoke.Resize(frame, frame, new Size(), 0.5f, 0.5f, Inter.Linear);
+        CvInvoke.Imshow("camera", frame); 
     }
 
-    private void UpdateTexture()
-    {
-        // frame = webcam.QueryFrame();
-        // texture.LoadRawTextureData(frame.ToImage<Bgra, Byte>().Bytes);
-        // texture.Apply();
-        CvInvoke.Imshow("camera", frame);
-    }
 
     void OnDestroy()
     {
@@ -159,13 +152,14 @@ public class Detection : MonoBehaviour
     }
 
 
-    private Mat ProcessImage()
+    private void ProcessImage()
     {
         frame = webcam.QueryFrame();    
 
         //Focus on the shield
         Mat frameHsvMat = new Mat();
         CvInvoke.CvtColor(frame,frameHsvMat,ColorConversion.Bgr2Hsv);
+
 
         Image<Hsv, byte> frameHSV = frameHsvMat.ToImage<Hsv, byte>();
 
@@ -174,86 +168,100 @@ public class Detection : MonoBehaviour
         Hsv upperShield = new Hsv(hShieldMax, sShieldMax, vShieldMax);
 
        
-        Mat frameShield = frameHSV.InRange(lowerShield, upperShield).Mat;
+        binaryShield = frameHSV.InRange(lowerShield, upperShield).Mat;
 
-        Mat structuringElement = CvInvoke.GetStructuringElement(ElementShape.Cross, new Size(2 * operationSize + 1, 2 * operationSize + 1), new Point(operationSize, operationSize) );
+        Mat structuringElement = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(2 * operationSize + 1, 2 * operationSize + 1), new Point(operationSize, operationSize) );
 
-        CvInvoke.Erode(frameShield, frameShield, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
-        CvInvoke.Erode(frameShield, frameShield, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
+        CvInvoke.Dilate(binaryShield, binaryShield, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
+        CvInvoke.Erode(binaryShield, binaryShield, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
 
-        FindContour(frameShield,"Shield");
+        FindContourShield();
 
         //Detection of the sword
 
         Hsv lowerSword = new Hsv(hSwordMin,sSwordMin,vSwordMin);
         Hsv upperSword = new Hsv(hSwordMax,sSwordMax,vSwordMax);
 
-        Mat frameSword = frameHSV.InRange(lowerSword, upperSword).Mat;
+        binarySword = frameHSV.InRange(lowerSword, upperSword).Mat;
 
-        CvInvoke.Dilate(frameSword, frameSword, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
-        CvInvoke.Erode(frameSword, frameSword, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
+        CvInvoke.Dilate(binarySword, binarySword, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
+        CvInvoke.Erode(binarySword, binarySword, structuringElement, new Point(-1, -1), nbrIteration, BorderType.Constant, new MCvScalar(0));
 
-        FindContour(frameSword,"Sword");
+        FindContourSword();
 
-        //Focus on the sword
-        return frameShield;
     }
 
-    private void FindContour(Mat frame,String nameObj)
+    private void FindContourShield()
     {
         VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
         VectorOfPoint biggestContour = new VectorOfPoint();
+
         int biggestContourIndex = -1;
-
-        if (nameObj == "Shield")
-            biggestContourIndexShield = -1;
-
-        if (nameObj == "Sword")
-            biggestContourIndexSword = -1;
-
-        double biggestContourArea;
+        double biggestContourArea = 0;
 
         Mat hierarchy = new Mat();
-        CvInvoke.FindContours(frame,contours,hierarchy, RetrType.List, ChainApproxMethod.ChainApproxNone);
+        CvInvoke.FindContours(binaryShield, contours, hierarchy, RetrType.List, ChainApproxMethod.ChainApproxNone);
 
-        //gather the one with the bggest areas and its properties;
+        //gather the one with the biggest areas and its properties;
         for (int i = 0; i < contours.Size; i++)
         {
-            biggestContour = contours[i];
-            biggestContourIndex = i;
-
-            if (nameObj == "Shield")
+            if (biggestContourArea < CvInvoke.ContourArea(contours[i]))
             {
-                biggestContourIndexShield = i;
-                shieldContourArea = CvInvoke.ContourArea(contours[i]);
+                biggestContour = contours[i];
+                biggestContourIndex = i;
+             
+                biggestContourArea = CvInvoke.ContourArea(contours[i]);
+             
             }
-
-
-            if (nameObj == "Sword")
-            {
-                biggestContourIndexSword = i;
-                swordContourArea = CvInvoke.ContourArea(contours[i]);
-            }
-
-            biggestContourArea = CvInvoke.ContourArea(contours[i]);
         }
 
         if (biggestContourIndex > -1)
         {
-            if (nameObj == "Shield")
-            {
+            //Debug.Log("bg "+ CvInvoke.ContourArea(biggestContour));
+            //Debug.Log("sc "+ CvInvoke.ContourArea(shieldContour));
 
-                //Debug.Log("bg "+ CvInvoke.ContourArea(biggestContour));
-                shieldContour = biggestContour;
+            shieldContourArea = biggestContourArea;
+            shieldContour = biggestContour;
+            CvInvoke.DrawContours(binaryShield, contours, biggestContourIndex, new MCvScalar(0, 0, 255), 10);
+            CvInvoke.Resize(binaryShield, binaryShield, new Size(), 0.5f, 0.5f, Inter.Linear);
+            CvInvoke.Imshow("shield", binaryShield);
+        }
+    }
 
-                //Debug.Log("sc "+ CvInvoke.ContourArea(shieldContour));
-            }
-            else if (nameObj == "Sword")
+    private void FindContourSword()
+    {
+        VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+        VectorOfPoint biggestContour = new VectorOfPoint();
+
+        int biggestContourIndex = -1;
+        double biggestContourArea = 0;
+
+        Mat hierarchy = new Mat();
+        CvInvoke.FindContours(binarySword, contours, hierarchy, RetrType.List, ChainApproxMethod.ChainApproxNone);
+
+        //gather the one with the biggest areas and its properties;
+        for (int i = 0; i < contours.Size; i++)
+        {
+            if (biggestContourArea < CvInvoke.ContourArea(contours[i]))
             {
-                swordContour = biggestContour;
+                biggestContour = contours[i];
+                biggestContourIndex = i;
+
+                biggestContourArea = CvInvoke.ContourArea(contours[i]);
+
             }
-            
-            CvInvoke.DrawContours(frame, contours, biggestContourIndex, new MCvScalar(0, 0, 255),10);
+        }
+
+        if (biggestContourIndex > -1)
+        {
+            //Debug.Log("bg "+ CvInvoke.ContourArea(biggestContour));
+            //Debug.Log("sc "+ CvInvoke.ContourArea(shieldContour));
+
+            swordContourArea = biggestContourArea;
+            swordContour = biggestContour;
+            CvInvoke.DrawContours(binarySword, contours, biggestContourIndex, new MCvScalar(0, 255, 0), 10);
+            CvInvoke.Resize(binarySword, binarySword, new Size(), 0.5f, 0.5f, Inter.Linear);
+            CvInvoke.Imshow("sword", binarySword);
         }
     }
 
